@@ -11,9 +11,7 @@ return new class extends Migration {
             $table->id();
             $table->bigInteger('conversation_id')->unsigned();
             $table->integer('user_send_id');
-            $table->integer('user_receive_id');
             $table->longText('text');
-            $table->tinyInteger('is_read')->default(0);
             $table->softDeletes();
             $table->foreign('conversation_id')->references('id')->on('conversations');
             $table->timestamps();
