@@ -10,10 +10,10 @@ return new class extends Migration {
         Schema::create('messages', function (Blueprint $table) {
             $table->id();
             $table->bigInteger('conversation_id')->unsigned();
-            $table->integer('user_send_id');
-            $table->longText('text');
-            $table->softDeletes();
             $table->foreign('conversation_id')->references('id')->on('conversations');
+            $table->bigInteger('sender_id')->unsigned();
+            $table->foreign('sender_id')->references('id')->on('users');
+            $table->longText('text')->nullable();
             $table->timestamps();
         });
     }
