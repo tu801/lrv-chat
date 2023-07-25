@@ -28,9 +28,8 @@ class SocketController extends Controller implements MessageComponentInterface
 
     function onOpen(ConnectionInterface $conn)
     {
-        $token = $this->getToken($conn);
-        if ($token) {
-            $user = User::where('token', $token);
+        $user = $this->user($conn);
+        if ($user) {
             $user->update(['connection_id' => $conn->resourceId, 'online_status' => 'Online']);
 
             $userData = $user->first();
@@ -50,22 +49,27 @@ class SocketController extends Controller implements MessageComponentInterface
         }
     }
 
-    private function getToken(ConnectionInterface $conn)
+    private function user(ConnectionInterface $conn)
     {
         $this->clients->attach($conn);
         $querystring = $conn->httpRequest->getUri()->getQuery();
         parse_str($querystring, $queryArray);
-        return $queryArray['token'] ?? false;
+        $token = $queryArray['token'] ?? false;
+        if (!$token) {
+            return false;
+        }
+        $user = User::where('token', $token);
+        if (!$user->first()){
+            return false;
+        }
+        return $user;
     }
 
     function onClose(ConnectionInterface $conn)
     {
-        $token = $this->getToken($conn);
-        if ($token) {
-
-            $user = User::where('token', $token);
+        $user = $this->user($conn);
+        if ($user) {
             $user->update(['connection_id' => 0, 'online_status' => 'Offline']);
-
             $userData = $user->first();
 
             $data = [
@@ -90,13 +94,12 @@ class SocketController extends Controller implements MessageComponentInterface
 
     function onMessage(ConnectionInterface $conn, $msg)
     {
-        $token = $this->getToken($conn);
-        if ($token) {
+        $user = $this->user($conn);
+        if ($user) {
             $data   = json_decode($msg);
             $action = $data->action ?? false;
 
             // user with token
-            $user     = User::where('token', $token);
             $userData = $user->first();
 
             if ($action == EnumChat::MESSAGE) {
