@@ -9,13 +9,11 @@ class AdminController extends Controller
 {
     function dashboard()
     {
-        return view('admin/dashboard');
+        if(Auth::check())
+        {
+            return view('admin/dashboard');
+        }
 
-        // if(Auth::check())
-        // {
-        //     return view('dashboard');
-        // }
-
-        // return redirect('login')->with('success', 'you are not allowed to access');
+        return redirect('login')->with('success', 'you are not allowed to access');
     }
 }

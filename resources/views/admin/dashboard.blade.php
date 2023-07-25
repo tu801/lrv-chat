@@ -114,7 +114,8 @@
         let token = "{{ auth()->user()->token }}";
         let conversationCurrent;
         $(document).ready(function () {
-            socket = new WebSocket('ws://lrv-chat.test:8090/?token=' + token);
+            socket_server = "ws://{{ env('SOCKET_URL') }}:8090/"
+            socket = new WebSocket(socket_server + '?token=' + token);
 
             socket.onopen = function (e) {
                 getChannels(socket);
