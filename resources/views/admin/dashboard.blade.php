@@ -1,242 +1,295 @@
 @extends('admin')
 
 @section('content')
-<div class="content">
-    <div class="container-fluid">
-      <div class="row">
-        <div class="col-lg-6">
-          <!-- DIRECT CHAT -->
-          <div class="card direct-chat direct-chat-primary">
-            <div class="card-header">
-              <h3 class="card-title">Direct Chat</h3>
-
-              <div class="card-tools">
-                <span title="3 New Messages" class="badge badge-primary">3</span>
-                <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                  <i class="fas fa-minus"></i>
-                </button>
-                <button type="button" class="btn btn-tool" title="Contacts" data-widget="chat-pane-toggle">
-                  <i class="fas fa-comments"></i>
-                </button>
-                <button type="button" class="btn btn-tool" data-card-widget="remove">
-                  <i class="fas fa-times"></i>
-                </button>
-              </div>
-            </div>
-            <!-- /.card-header -->
-            <div class="card-body">
-              <!-- Conversations are loaded here -->
-              <div class="direct-chat-messages">
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 2:00 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="{{asset('plugins/adminlte/img/user1-128x128.jpg')}}" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Is this template really for free? That's unbelievable!
-                  </div>
-                  <!-- /.direct-chat-text -->
+    <div class="content">
+        <div class="container-fluid">
+            <div class="row">
+                <!-- /.col-md-6 -->
+                <div class="col-lg-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="card-title">
+                                <button type="button" onclick="getUsers()" class="btn btn-sm btn-success" data-toggle="modal" data-target="#exampleModalLong">
+                                    <i class="fas fa-plus"></i> New Message
+                                </button>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <ul class="list-group mt-3" id="channelList">
+                            </ul>
+                        </div>
+                    </div>
                 </div>
-                <!-- /.direct-chat-msg -->
+                <!-- /.col-md-6 -->
 
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 2:05 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="{{asset('plugins/adminlte/img/user3-128x128.jpg')}}" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    You better believe it!
-                  </div>
-                  <!-- /.direct-chat-text -->
+                <div class="col-lg-8">
+                    <!-- DIRECT CHAT -->
+                    <div class="card direct-chat direct-chat-primary">
+                        <div class="card-header">
+                            <h3 class="card-title">Direct Chat</h3>
+
+                            <div class="card-tools">
+                                <button type="button" class="btn btn-tool" data-card-widget="collapse">
+                                    <i class="fas fa-minus"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" title="Contacts"
+                                        data-widget="chat-pane-toggle">
+                                    <i class="fas fa-comments"></i>
+                                </button>
+                                <button type="button" class="btn btn-tool" data-card-widget="remove">
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <!-- /.card-header -->
+                        <div class="card-body">
+                            <!-- Conversations are loaded here -->
+                            <div class="direct-chat-messages" id="messages">
+
+                            </div>
+                            <!-- /.direct-chat-pane -->
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                                <div class="input-group">
+                                    <input type="text" id="message" placeholder="Type Message ..."
+                                           class="form-control">
+                                    <span class="input-group-append">
+                                        <button type="button" id="send" class="btn btn-primary">Send</button>
+                                      </span>
+                                </div>
+                        </div>
+                        <!-- /.card-footer-->
+                    </div>
+                    <!--/.direct-chat -->
+
                 </div>
-                <!-- /.direct-chat-msg -->
 
-                <!-- Message. Default to the left -->
-                <div class="direct-chat-msg">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-left">Alexander Pierce</span>
-                    <span class="direct-chat-timestamp float-right">23 Jan 5:37 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="{{asset('plugins/adminlte/img/user1-128x128.jpg')}}" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    Working with AdminLTE on a great new app! Wanna join?
-                  </div>
-                  <!-- /.direct-chat-text -->
+            </div>
+            <!-- /.row -->
+
+            <!-- Modal -->
+            <div class="modal fade" id="exampleModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                <div class="modal-dialog" role="document">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLongTitle">Messages</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="form-group">
+                                <label>Name</label>
+                                <input type="text" class="form-control" id="name-group" placeholder="Enter Name Group">
+                            </div>
+                            <div class="form-group">
+                                <label>Send To: </label>
+                                <select id="users" class="form-control select2" multiple="multiple" data-placeholder="Select a State" style="width: 100%;">
+                                </select>
+                            </div>
+                        </div>
+                        <div class="modal-footer">
+                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                            <button id="create-channel" type="button" class="btn btn-primary">Create</button>
+                        </div>
+                    </div>
                 </div>
-                <!-- /.direct-chat-msg -->
-
-                <!-- Message to the right -->
-                <div class="direct-chat-msg right">
-                  <div class="direct-chat-infos clearfix">
-                    <span class="direct-chat-name float-right">Sarah Bullock</span>
-                    <span class="direct-chat-timestamp float-left">23 Jan 6:10 pm</span>
-                  </div>
-                  <!-- /.direct-chat-infos -->
-                  <img class="direct-chat-img" src="{{asset('plugins/adminlte/img/img/user3-128x128.jpg')}}" alt="message user image">
-                  <!-- /.direct-chat-img -->
-                  <div class="direct-chat-text">
-                    I would love to.
-                  </div>
-                  <!-- /.direct-chat-text -->
-                </div>
-                <!-- /.direct-chat-msg -->
-
-              </div>
-              <!--/.direct-chat-messages-->
-
-              <!-- Contacts are loaded here -->
-              <div class="direct-chat-contacts">
-                <ul class="contacts-list">
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user1-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Count Dracula
-                          <small class="contacts-list-date float-right">2/28/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">How have you been? I was...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user7-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Sarah Doe
-                          <small class="contacts-list-date float-right">2/23/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I will be waiting for...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user3-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nadia Jolie
-                          <small class="contacts-list-date float-right">2/20/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">I'll call you back at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user5-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Nora S. Vans
-                          <small class="contacts-list-date float-right">2/10/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Where is your new...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user6-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          John K.
-                          <small class="contacts-list-date float-right">1/27/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Can I take a look at...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                  <li>
-                    <a href="#">
-                      <img class="contacts-list-img" src="{{asset('plugins/adminlte/img/img/user1-128x128.jpg')}}" alt="User Avatar">
-
-                      <div class="contacts-list-info">
-                        <span class="contacts-list-name">
-                          Kenneth M.
-                          <small class="contacts-list-date float-right">1/4/2015</small>
-                        </span>
-                        <span class="contacts-list-msg">Never mind I found...</span>
-                      </div>
-                      <!-- /.contacts-list-info -->
-                    </a>
-                  </li>
-                  <!-- End Contact Item -->
-                </ul>
-                <!-- /.contacts-list -->
-              </div>
-              <!-- /.direct-chat-pane -->
             </div>
-            <!-- /.card-body -->
-            <div class="card-footer">
-              <form action="#" method="post">
-                <div class="input-group">
-                  <input type="text" name="message" placeholder="Type Message ..." class="form-control">
-                  <span class="input-group-append">
-                    <button type="button" class="btn btn-primary">Send</button>
-                  </span>
-                </div>
-              </form>
-            </div>
-            <!-- /.card-footer-->
-          </div>
-          <!--/.direct-chat -->
 
-        </div>
-        <!-- /.col-md-6 -->
-        <div class="col-lg-6">
-          <div class="card">
-            <div class="card-header">
-              <h5 class="m-0">Featured</h5>
-            </div>
-            <div class="card-body">
-              <h6 class="card-title">Special title treatment</h6>
 
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-
-          <div class="card card-primary card-outline">
-            <div class="card-header">
-              <h5 class="m-0">Featured</h5>
-            </div>
-            <div class="card-body">
-              <h6 class="card-title">Special title treatment</h6>
-
-              <p class="card-text">With supporting text below as a natural lead-in to additional content.</p>
-              <a href="#" class="btn btn-primary">Go somewhere</a>
-            </div>
-          </div>
-        </div>
-        <!-- /.col-md-6 -->
-      </div>
-      <!-- /.row -->
-    </div><!-- /.container-fluid -->
-  </div>
+        </div><!-- /.container-fluid -->
+    </div>
 @endsection('content')
+@section('css')
+    <link rel="stylesheet" href="{{ asset('plugins/select2/css/select2.min.css') }}">
+@endsection('css')
+
+@section('script')
+    <script src="{{ asset('plugins/select2/js/select2.full.min.js') }}"></script>
+
+    <script>
+        let socket;
+        let userID = "{{ Auth::user()->id }}";
+        let token = "{{ auth()->user()->token }}";
+        let conversationCurrent;
+        $(document).ready(function () {
+            socket = new WebSocket('ws://lrv-chat.test:8090/?token=' + token);
+
+            socket.onopen = function (e) {
+                getChannels(socket);
+            }
+            socket.onmessage = function (e) {
+                let messages;
+                const data = JSON.parse(e.data);
+                const type = data.type;
+
+                // receive message
+                if (type == {{ \App\Enums\EnumChat::MESSAGE  }}) {
+                    if(data.conversation_id == conversationCurrent) {
+                        if (data.sender_id != userID) {
+                            messages = MessageOther(data.name, data.created_at, data.avatar, data.text);
+                        } else {
+                            messages = MessageMe(data.name, data.created_at, data.avatar, data.text);
+                        }
+                        $('#messages').append(messages);
+                        scrollMessage()
+                    }
+                }
+                // receive channels
+                if (type == {{ \App\Enums\EnumChat::CHANNEL  }}) {
+                    let channels = data.channels;
+                    let htmlChanel = '';
+                    channels.forEach(function (data) {
+                        htmlChanel += `<li onclick="loadMessage(${data.id})" class="list-group-item">${data.name}</li>`;
+                    })
+                    $('#channelList').html(htmlChanel);
+                }
+                // load message
+                if (type == {{ \App\Enums\EnumChat::LOAD_MESSAGE  }}) {
+                    let messages = data.messages;
+                    let htmlMessages = '';
+                    messages.forEach(function (data) {
+                        if (data.sender_id == userID) {
+                            // right
+                            htmlMessages += MessageMe(data.name, data.created_at, data.avatar, data.text)
+                        } else {
+                            htmlMessages += MessageOther(data.name, data.created_at, data.avatar, data.text)
+                        }
+                    })
+                    $('#messages').html(htmlMessages);
+                    scrollMessage();
+                }
+                // load users
+                if (type == {{ \App\Enums\EnumChat::GET_USER  }}) {
+                    let users = data.users;
+                    let htmlUsers = '';
+                    users.forEach(function (data) {
+                        htmlUsers += `<option value="${data.id}">${data.name} (${data.online_status})</option>`
+                    })
+                    $('#users').html(htmlUsers);
+                }
+
+                if (type == {{ \App\Enums\EnumChat::CREATE_CHANNEL  }}) {
+                    getChannels()
+                    if (data.user_init_id == userID) {
+                        loadMessage(data.conversation_id)
+                    }
+                }
+
+
+            }
+
+            // enter or click send message
+            function processMessage() {
+                const message = $('#message').val().trim();
+                if (message !== '') {
+                    sendMessage(message, conversationCurrent);
+                    $('#message').val('');
+                    scrollMessage();
+                }
+            }
+
+            $('#message').keypress(function(event) {
+                if (event.keyCode === 13) {
+                    event.preventDefault();
+                    processMessage();
+                }
+            });
+
+            $('#send').click(function () {
+                processMessage();
+            });
+
+
+            $('#create-channel').click(function (){
+                const name = $('#name-group').val().trim();
+                const ids = $('#users').val();
+                if (message && ids) {
+                    createChannel(name, ids);
+                    $('#exampleModalLong').modal('hide')
+                }
+            });
+
+        })
+
+        function loadMessage(conversation_id) {
+            conversationCurrent = conversation_id
+            socket.send(JSON.stringify({
+                conversation_id: conversation_id,
+                action: {{ \App\Enums\EnumChat::LOAD_MESSAGE  }},
+            }))
+
+        }
+
+        function sendMessage(message, conversation_id) {
+            socket.send(JSON.stringify({
+                conversation_id: conversation_id,
+                text: message,
+                action: {{ \App\Enums\EnumChat::MESSAGE  }},
+            }))
+        }
+
+        function getChannels() {
+            socket.send(JSON.stringify({
+                action: {{ \App\Enums\EnumChat::CHANNEL  }},
+            }))
+        }
+
+        function getUsers() {
+            socket.send(JSON.stringify({
+                action: {{ \App\Enums\EnumChat::GET_USER  }},
+            }))
+        }
+
+        function createChannel(name, ids) {
+            socket.send(JSON.stringify({
+                name: name,
+                ids: ids,
+                action: {{ \App\Enums\EnumChat::CREATE_CHANNEL  }},
+            }))
+        }
+
+        function scrollMessage() {
+            $('#messages').animate({
+                scrollTop: $('#messages').get(0).scrollHeight
+            }, 500);
+        }
+
+        function MessageMe(name, created_at, avatar, text) {
+            const avatar_user = avatar ? avatar : 'https://kiemtientuweb.com/ckfinder/userfiles/images/avatar-trang/avatar-trang-11.jpg';
+            return `
+                <div class="direct-chat-msg right">
+                      <div class="direct-chat-infos clearfix">
+                        <span class="direct-chat-name float-right">${name}</span>
+                        <span class="direct-chat-timestamp float-left">${created_at}</span>
+                      </div>
+                      <img class="direct-chat-img" src="${avatar_user}" alt="${name}">
+                      <div class="direct-chat-text">
+                        ${text}
+                      </div>
+                </div>`
+        }
+
+        function MessageOther(name, created_at, avatar, text) {
+            const avatar_user = avatar ? avatar : 'https://kiemtientuweb.com/ckfinder/userfiles/images/avatar-trang/avatar-trang-11.jpg';
+            return `
+                <div class="direct-chat-msg">
+                      <div class="direct-chat-infos clearfix">
+                        <span class="direct-chat-name float-left">${name}</span>
+                        <span class="direct-chat-timestamp float-right">${created_at}</span>
+                      </div>
+                      <img class="direct-chat-img" src="${avatar_user}" alt="${name}">
+                      <div class="direct-chat-text">
+                        ${text}
+                      </div>
+                </div>`
+        }
+</script>
+<script>
+    $(function () {
+        //Initialize Select2 Elements
+        $('.select2').select2()
+    });
+</script>
+@endsection('script')

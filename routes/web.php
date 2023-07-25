@@ -26,6 +26,6 @@ Route::post('login', [LoginController::class, 'login']);
 Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register');
 Route::post('register', [RegisterController::class, 'register']);
 
-Route::controller(AdminController::class)->group(function(){
+Route::controller(AdminController::class)->middleware(['auth'])->group(function(){
     Route::get('dashboard', 'dashboard')->name('dashboard');
 });

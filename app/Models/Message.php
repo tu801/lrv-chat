@@ -7,11 +7,9 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Message extends Model
 {
-    use SoftDeletes;
-
     protected $fillable = [
         'conversation_id',
-        'user_send_id',
+        'sender_id',
         'text',
     ];
 }
