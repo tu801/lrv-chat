@@ -79,8 +79,8 @@
                             </button>
                         </div>
                         <div class="modal-body">
-                            <div class="form-group">
-                                <label>Name</label>
+                            <div class="form-group" style="display: none;" id="name-group-form">
+                                <label>Name Group</label>
                                 <input type="text" class="form-control" id="name-group" placeholder="Enter Name Group">
                             </div>
                             <div class="form-group">
@@ -142,7 +142,20 @@
                     let channels = data.channels;
                     let htmlChanel = '';
                     channels.forEach(function (data) {
-                        htmlChanel += `<li onclick="loadMessage(${data.id})" class="list-group-item">${data.name}</li>`;
+                        var coutUser = data.conversation_user.length;
+                        if (coutUser > 2) {
+                            htmlChanel += `<li onclick="loadMessage(${data.id})" class="list-group-item">${data.name}</li>`;
+                        }else if (coutUser == 2){
+                            if(data.conversation_user[0].user_id == userID) {
+                                htmlChanel += `<li onclick="loadMessage(${data.id})" class="list-group-item">
+                                                ${data.conversation_user[1].user.name}
+                                            </li>`;
+                            }else {
+                                htmlChanel += `<li onclick="loadMessage(${data.id})" class="list-group-item">
+                                                ${data.conversation_user[0].user.name}
+                                            </li>`;
+                            }
+                        }
                     })
                     $('#channelList').html(htmlChanel);
                 }
@@ -211,6 +224,16 @@
                     $('#exampleModalLong').modal('hide')
                 }
             });
+
+            $('#users').change(function (){
+                const ids = $('#users').val();
+               if (ids.length > 1) {
+                   $('#name-group-form').show();
+               }else{
+                   $('#name-group-form').hide();
+               }
+            })
+
 
         })
 

@@ -9,6 +9,7 @@ use App\Models\Message;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Ratchet\ConnectionInterface;
@@ -177,6 +178,7 @@ class SocketController extends Controller implements MessageComponentInterface
                         $join->on('conversation_users.conversation_id', 'conversations.id')
                             ->on('conversation_users.user_id', DB::raw($userData->id));
                     })
+                    ->with('conversationUser.user')
                     ->latest()
                     ->get();
 
@@ -220,7 +222,7 @@ class SocketController extends Controller implements MessageComponentInterface
             }
 
             if ($action == EnumChat::GET_USER) {
-                $users = User::query()->get();
+                $users = User::query()->whereKeyNot($userData->id)->get();
                 $data  = [
                     'users' => $users,
                     'type'  => EnumChat::GET_USER
@@ -235,7 +237,7 @@ class SocketController extends Controller implements MessageComponentInterface
             if ($action == EnumChat::CREATE_CHANNEL) {
                 // validate
                 $validator = Validator::make((array)$data, [
-                    'name' => 'required|string',
+                    'name' => 'string',
                     'ids'  => 'required',
                 ]);
 
@@ -257,24 +259,41 @@ class SocketController extends Controller implements MessageComponentInterface
                 }
 
 
-                $conversation = Conversation::query()->create([
-                    'name' => $name,
-                    'user_init_id' => $userData->id,
-                ]);
-                $conversationId = $conversation->id;
 
-                // add user create to channel
-                ConversationUser::create([
-                    'user_id' => $userData->id,
-                    'conversation_id' => $conversationId,
-                ]);
+                $ids[] = $userData->id;
+                $name = (count($ids) > 2) ? $name : implode($ids, '::');
 
-                foreach ($ids  as $id) {
-                    ConversationUser::create([
-                        'user_id' => $id,
-                        'conversation_id' => $conversationId,
-                    ]);
+                if(count($ids) == 2) {
+                    $conversation = Conversation::query()->where(function (Builder $query) use ($ids) {
+                        $query->orWhere([
+                            'name' => $ids[0] . '::' . $ids[1]
+                        ])
+                            ->orWhere([
+                                'name' => $ids[1] . '::' . $ids[0]
+                            ]);
+                    })->first();
+
                 }
+
+                if (count($ids) == 2 && $conversation) {
+                    $conversationId = $conversation->id;
+                } else {
+                    $conversation = Conversation::query()->create([
+                        'name' => $name,
+                        'user_init_id' => $userData->id,
+                    ]);
+                    $conversationId = $conversation->id;
+
+                    // add user create to channel
+
+                    foreach ($ids  as $id) {
+                        ConversationUser::create([
+                            'user_id' => $id,
+                            'conversation_id' => $conversationId,
+                        ]);
+                    }
+                }
+
                 $users = User::query()->whereIn('id', $ids);
                 $connectionUserInConversation = $users->pluck('connection_id');
 
